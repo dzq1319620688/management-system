@@ -1,0 +1,43 @@
+html, body, #app {
+    height: 100%;
+    margin: 0;
+}
+*{margin: 0;padding: 0;}
+li{list-style: none;}
+.fl{float: left;}
+.fr{float:right;}
+.clear{clear: both;}
+/* ::-webkit-scrollbar {display:none} */
+.mt{margin-bottom: 20px}
+.table-wrapper {
+  padding: 15px;
+  background: #ffffff;
+  .table__operation {
+    padding-bottom: 10px;
+  }
+}
+.el-switch__label *{
+  font-size: 10px;
+}
+.el-table-column--selection .cell{
+    padding-left: 14px !important;
+  }
+  .search-wrapper {
+    padding: 15px 15px 5px;
+    margin-bottom: 10px;
+    background: #ffffff;
+    & > * {
+      margin-right: 15px;
+      margin-bottom: 10px;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  
+    & > .el-select & > .base-date-picker {
+      width: 400px;
+    }
+    & > .el-input {
+      width: 220px;
+    }
+  }
