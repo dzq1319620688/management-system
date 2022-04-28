@@ -16,34 +16,28 @@ const routes = [
         meta:{bread:['首页']}
       },
       {
-        path:'/account/all',
-        name:'acconut_all',
-        component:()=>import('../views/account/All.vue'),
-        meta:{bread:['账户管理','业务人员']}
-      },
-      {
+        name: "account",
         path:'/account/manage',
-        name:'acconut_manage',
         component:()=>import('../views/account/manage.vue'),
-        meta:{bread:['账户管理','管理员']}
+        meta:{bread:['账户管理','人员管理']}
+    },
+      {
+        path:'/product/index',
+        name:'product',
+        component:()=>import('../views/product/index.vue'),
+        meta:{bread:['商品管理','商品列表']}
       },
       {
-        path:'/product/all',
-        name:'product_all',
-        component:()=>import('../views/product/All.vue'),
-        meta:{bread:['产品管理','产品运营']}
-      },
-      {
-        path:'/product/balance',
-        name:'product_balance',
-        component:()=>import('../views/product/balance.vue'),
-        meta:{bread:['产品管理','结算数据']}
-      },
-      {
-        path:'/business/index',
+        path:'/orderManage/index',
         name:'business',
-        component:()=>import('../views/business/index.vue'),
-        meta:{bread:['业务管理','业务信息']}
+        component:()=>import('../views/orderManage/index.vue'),
+        meta:{bread:['订单管理','所有订单']}
+      },
+      {
+        path:'/orderManage/orderChart',
+        name:'orderChart',
+        component:()=>import('../views/orderManage/orderChart.vue'),
+        meta:{bread:['订单管理','订单报表']}
       },
       {
         path:'/personal/index',
@@ -57,7 +51,8 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue')
-  }
+  },
+  
 ]
 
 const router = new VueRouter({

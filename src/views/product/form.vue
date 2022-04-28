@@ -3,56 +3,113 @@
   <div>
     <el-dialog
       :visible="dialogStatus"
-      :title="title?'新增产品':'修改产品'"
+      :title="title?'新增商品':'修改商品'"
       @close="close"
-      width="50%"
+      width="60%"
       append-to-body
     >
       <el-form
         ref="form"
-        :model="ruleForm"
+        :model="form"
         label-width="80px"
+        style="margin-left:100px"
         :rules="rules"
       >
-      <div v-if="title">
-        <el-form-item label="公司名称" prop="companyName">
+      <div>
+        <el-form-item label="商品编码" prop="id" class="itemLeft">
           <el-input
-            placeholder="请输入公司的名称"
-            v-model="ruleForm.companyName"
+            placeholder="请输入商品编码"
+            v-model="form.id"
           ></el-input>
         </el-form-item>
-        <el-form-item label="产品名称" prop="productName">
+        <el-form-item label="商品名称" prop="waresName" class="itemRight">
           <el-input
-            placeholder="请输入产品名称"
-            v-model="ruleForm.productName"
+            placeholder="请输入商品名称"
+            v-model="form.waresName"
           ></el-input>
-        </el-form-item>
-        <el-form-item label="业务人员" prop="name">
-          <el-select v-model="ruleForm.name" placeholder="对接人员" style="width:100%" filterable clearable size="medium">
-            <el-option value="0">人员1</el-option>
-            <el-option value="1">人员2</el-option>
-            <el-option value="2">人员3</el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="利率" prop="rate">
-          <el-input placeholder="利率" v-model="ruleForm.rate"></el-input>
         </el-form-item>
       </div>
-        <el-form-item label="产品详情" prop="productDetail">
+      <div>
+        <el-form-item label="商品详情" prop="waresDetail" class="itemLeft">
           <el-input
-            placeholder="产品详情"
-            v-model="ruleForm.productDetail"
+            placeholder="请输入商品详情"
+            v-model="form.waresDetail"
           ></el-input>
         </el-form-item>
-        <el-form-item label="数量" prop="number">
-          <el-input placeholder="数量" v-model="ruleForm.number"></el-input>
+        <el-form-item label="商品尺寸" prop="waresSize" class="itemRight">
+          <el-input
+            placeholder="请输入商品尺寸"
+            clearable
+            v-model="form.waresSize"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="金额" prop="money">
-          <el-input placeholder="金额" v-model="ruleForm.money"></el-input>
+      </div>
+      <div>
+        <el-form-item label="成本价" prop="primeCost" class="itemLeft">
+          <el-input
+            placeholder="请输入成本价"
+            clearable
+            v-model="form.primeCost"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="放贷时间" prop="date">
-          <el-input placeholder="放贷时间" v-model="ruleForm.date"></el-input>
+        <el-form-item label="市场价" prop="marketPrice" class="itemRight">
+          <el-input
+            placeholder="请输入市场价"
+            clearable
+            v-model="form.marketPrice"
+          ></el-input>
         </el-form-item>
+      </div>
+      <div>
+        <el-form-item label="库存数量" prop="number" class="itemLeft">
+          <el-input
+            placeholder="请输入库存数量"
+            clearable
+            v-model="form.number"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="入库时间" prop="depotDate" class="itemRight">
+          <el-input
+            placeholder="请输入入库时间"
+            clearable
+            v-model="form.depotDate"
+          ></el-input>
+        </el-form-item>
+      </div>
+        <el-form-item label="备注" prop="text" class="itemRight">
+          <el-input
+            placeholder="请输入商品名称"
+            type="textarea"
+            :rows="2"
+            v-model="form.text"
+          ></el-input>
+        </el-form-item>
+      <div>
+        <el-form-item label="商品类型" prop="waresType" class="itemLeft">
+          <search-Wares-Type-select v-model="form.waresType" />
+        </el-form-item>
+        <el-form-item label="商品标签" prop="waresTag" class="itemRight">
+          <search-Wares-Tag-select v-model="form.waresTag" />
+        </el-form-item>
+      </div>
+      <div>
+        <el-form-item label="计量单位" prop="unit" class="itemLeft">
+          <el-select
+            v-model="form.unit"
+            clearable
+            filterable
+            size="medium" placeholder="请选择计量单位">
+            <el-option
+              v-for="item in unitTypeMap"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="配送类型" prop="deliverType" class="itemRight">
+          <search-Deliver-Type-select v-model="form.deliverType" />
+        </el-form-item>
+      </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
           <el-button @click="close">取 消</el-button>
@@ -62,79 +119,89 @@
   </div>
 </template>
 <script>
-const ruleForm = {
-  companyName: "", // 公司名称
-  productName: "", // 产品名称
-  name: "", // 联系人
-  rate: "", // 比率
-  productDetail:"",//产品详情
-  number: "", // 数量
-  money: "", // 金额
-  date: "", // 放贷时间
+import SearchWaresTypeSelect from "@/components/SearchWaresTypeSelect";
+import SearchWaresTagSelect from "@/components/SearchWaresTagSelect";
+import SearchDeliverTypeSelect from "@/components/SearchDeliverTypeSelect";
+import { unitTypeMap } from "@/const/unit-type";
+import {waresAdd,waresUpdata} from "@/api/product"
+const form = {
+  id:undefined,// 商品编码
+  waresName: undefined, // 商品名称
+  waresType:undefined, // 商品类型
+  waresDetail: undefined, // 商品详情
+  primeCost: undefined, // 成本价
+  marketPrice: undefined, //市场价
+  number: undefined, // 库存数量
+  waresTag: 0, // 商品标签
+  depotDate: undefined, // 入库时间
+  status:0,//新增时状态为待入库
+  text: undefined, // 备注
+  unit: 0, // 计量单位
+  waresSize: undefined, // 商品尺寸
+  deliverType: 0, // 配送类型
 };
 export default {
+  components: {
+    SearchWaresTypeSelect,
+    SearchWaresTagSelect,
+    SearchDeliverTypeSelect,
+  },
   data() {
     return {
       dialogStatus: false,
-      ruleForm: Object.assign({}, ruleForm),
+      form: Object.assign({}, form),
       title: true,
+      unitTypeMap,
       rules: {
-        companyName: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
-        ],
-        productName: [
-          { required: true, message: "请输入产品名称", trigger: "blur" },
-        ],
-        productDetail: [
-          { required: true, message: "请输入产品名称", trigger: "blur" },
-        ],
-        name: [
-          { required: true, message: "请输入业务人员姓名", trigger: "blur" },
-        ],
-        number: [
-          { required: true, message: "请输入数量", trigger: "blur" },
-        ],
-        money: [
-          { required: true, message: "请输入金额", trigger: "blur" },
-        ],
-        rate: [
-          { required: true, message: "请输入利率", trigger: "blur" },
-        ],
-        date: [
-          { required: true, message: "请输入放贷时间", trigger: "blur" },
-        ],
-      }
+        id: [{ required: true, message: "请输入商品编码", trigger: "blur" }],
+        waresName: [{ required: true, message: "请输入商品名称", trigger: "blur" }],
+        waresDetail: [{ required: false, message: "请输入商品详情", trigger: "blur" }],
+        waresSize: [{ required: false, message: "请输入商品尺寸", trigger: "blur" }],
+        depotDate: [{ required: true, message: "请输入入库时间", trigger: "blur" }],
+        primeCost: [{ required: true, message: "请输入成本价", trigger: "blur",pattern:/^[1-9]\d*$/ }],
+        marketPrice: [{ required: false, message: "请输入市场价", trigger: "blur",pattern:/^[1-9]\d*$/ }],
+        number: [{ required: true, message: "请输入库存数量", trigger: "blur",pattern:/^[1-9]\d*$/ }],
+        text: [{ required: false, message: "请输入备注", trigger: "blur" }],
+        waresType: [{ required: true, message: "请输入商品类型", trigger: "blur" }],
+        waresTag: [{ required: true, message: "请输入商品标签", trigger: "blur" }],
+        unit: [{ required: true, message: "请输入计量单位", trigger: "blur" }],
+        deliverType: [{ required: true, message: "请输入配送类型", trigger: "blur" }],
+      },
     };
   },
   methods: {
     show(data) {
       this.dialogStatus = true;
       if (data) {
-        //以id去获取详情
-        this.ruleForm =  {
-          productDetail:"",//产品详情
-          number: "", // 数量
-          money: "", // 金额
-          date: "", // 放贷时间
-        };
-        this.ruleForm = Object.assign(this.ruleForm, data);
-        this.title=false;
-        console.log(data)
+        this.form = Object.assign({}, data);
+        this.title = false;
+        console.log(data);
       }
     },
     close() {
       this.dialogStatus = false;
-      this.title=true;
+      this.title = true;
       this.reset();
     },
     reset() {
-      this.ruleForm = Object.assign({}, ruleForm);
+      this.form = Object.assign({}, form);
       this.$refs.form.resetFields();
     },
     onSubmit() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          console.log(this.ruleForm, "提交的表单");
+          if(this.title){
+            waresAdd(this.form).then(res=>{
+              this.$emit("submit",res.data)
+              this.$message.success("新增成功");
+            })
+          }else{
+            waresUpdata(this.form).then(res=>{
+              this.$emit("submit",res.data)
+              this.$message.success("修改成功");
+            })
+          }
+          this.close()
         } else {
           return false;
         }
@@ -143,5 +210,11 @@ export default {
   },
 };
 </script>
-<style scoped lang="scss">
+<style scoped lang="less">
+.itemLeft{
+  display: inline-block;width: 40%;margin-right: 10%;
+}
+.itemRight{
+  display: inline-block;width: 40%;
+}
 </style>

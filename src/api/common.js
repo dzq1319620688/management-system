@@ -1,7 +1,8 @@
-import servise from '@/router/service'
+import servise from '@/api/service'
 import axios from 'axios'
 const CancelToken= axios.CancelToken
 //CancelToken是中断请求的办法。具体使用看https://www.axios-http.cn/docs/cancellation
+//封装公共列表接口，并且增加节流功能，连续操作时，取消前一个请求，只返回最后一个
 export const getTableList = (url,params, _this) => {
   return servise({
     url,

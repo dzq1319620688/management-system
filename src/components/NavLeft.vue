@@ -1,6 +1,6 @@
 <template>
   <div>
-      <h4 class="title">樱花金融后台管理系统</h4>
+      <h4 class="title">金融后台管理系统</h4>
     <el-menu
       :default-active="activeMenu"
       class="el-menu-vertical-demo"
@@ -23,6 +23,7 @@
 <script>
 // import { get } from "@/utils/http.js";
 import {menuList} from "@/api/login"
+import {getType} from "@/utils/auth"
 import Menus from "./Menus.vue";
 
 export default {
@@ -32,7 +33,7 @@ export default {
     };
   },
   created() {
-    menuList({"type":1}).then((res) => {
+    menuList({"type":getType()}).then((res) => {
       this.menuData = res.data;
       console.log(res);
     });

@@ -1,4 +1,4 @@
-import service from "../router/service";
+import service from "../api/service";
 export function get(url,params){
     const config={
         method:"get",

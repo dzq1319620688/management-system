@@ -4,11 +4,11 @@
       <el-col :span="6">
         <el-card shadow="always" class="in">
           <div class="fl">
-            <p>本月数量</p>
-            <p>121</p>
+            <p>本周订单数量</p>
+            <p>{{proportionData[0].num}}</p>
             <p>
-              +20.25%
-              <span>与上月同比</span>
+              +{{proportionData[0].ratio}}%
+              <span>与上周同比</span>
             </p>
           </div>
           <i class="el-icon-money ico fr"></i>
@@ -18,11 +18,11 @@
       <el-col :span="6">
         <el-card shadow="always" class="allin">
           <div class="fl">
-            <p>本月放款（元）</p>
-            <p>1210000</p>
+            <p>本周成交金额</p>
+            <p>{{proportionData[1].num}}</p>
             <p>
-              +1.25%
-              <span>与上月同比</span>
+              +{{proportionData[1].ratio}}%
+              <span>与上周同比</span>
             </p>
           </div>
           <i class="el-icon-money ico fr"></i>
@@ -32,11 +32,11 @@
       <el-col :span="6">
         <el-card shadow="always" class="allout">
           <div class="fl">
-            <p>累计数量</p>
-            <p>153555</p>
+            <p>累计订单数</p>
+            <p>{{proportionData[2].num}}</p>
             <p>
-              +16.25%
-              <span>与去年同比</span>
+              +{{proportionData[2].ratio}}%
+              <span>与上月同比</span>
             </p>
           </div>
           <i class="el-icon-money ico fr"></i>
@@ -46,11 +46,11 @@
       <el-col :span="6">
         <el-card shadow="always" class="out">
           <div class="fl">
-            <p>累计放款</p>
-            <p>5320000</p>
+            <p>累计成交金额</p>
+            <p>{{proportionData[3].num}}</p>
             <p>
-              +4.25%
-              <span>与去年同比</span>
+              +{{proportionData[3].ratio}}%
+              <span>与上月同比</span>
             </p>
           </div>
           <i class="el-icon-money ico fr"></i>
@@ -62,7 +62,7 @@
       <el-col :span="18">
         <el-card>
           <div slot="header">
-            <span>产品统计分析</span>
+            <span>订单数统计分析</span>
           </div>
           <div ref="analysis" style="height: 240px"></div>
         </el-card>
@@ -70,7 +70,7 @@
       <el-col :span="6">
         <el-card>
           <div slot="header">
-            <span>产品产品占比</span>
+            <span>商品类型占比</span>
           </div>
           <div ref="percent" style="height: 240px"></div>
         </el-card>
@@ -119,14 +119,33 @@ export default {
     return {
       xdata: [],
       ydata: [],
+      listData:[],
+      proportionData:[
+        {
+            num:"",
+            ratio:""
+        },
+        {
+            num:"",
+            ratio:""
+        },
+        {
+            num:"",
+            ratio:""
+        },
+        {
+            num:"",
+            ratio:""
+        },
+      ],
       value: new Date(),
     };
   },
   mounted() {
     this.loadData().then(() => {
       this.loadLine();
+      this.drawpie();
     });
-    this.drawpie();
   },
   methods: {
     loadLine() {
@@ -169,8 +188,10 @@ export default {
     },
     loadData() {
       return post("/load").then((res) => {
-        this.xdata = res.data.xdata;
-        this.ydata = res.data.ydata;
+        this.listData=res.data.list2
+        this.proportionData=res.data.proportionData
+        this.xdata = res.data.list.xdata;
+        this.ydata = res.data.list.ydata;
       });
     },
     drawpie() {
@@ -201,9 +222,10 @@ export default {
               show: false,
             },
             data: [
-              { value: 1048, name: "汽车消费" },
-              { value: 735, name: "房产消费" },
-              { value: 580, name: "抵押贷款" },
+              { value: this.listData[0], name: "食品" },
+              { value: this.listData[1], name: "日用" },
+              { value: this.listData[2], name: "服装" },
+              { value: this.listData[3], name: "电子" },
             ],
           },
         ],

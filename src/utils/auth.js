@@ -22,6 +22,14 @@ function getId(){
     return
 }
 
+function getType(){
+    let data=sessionStorage.getItem("account")
+    if(data){
+        return JSON.parse(data).type
+    }
+    return
+}
+
 function setAccount(data){
     sessionStorage.setItem("account",JSON.stringify(data))
 }
@@ -30,4 +38,4 @@ function removeAccount(){
     sessionStorage.removeItem("account")
 }
 
-export {getToken,setAccount,removeAccount,getNickname,getId}
+export {getToken,setAccount,removeAccount,getNickname,getId,getType}

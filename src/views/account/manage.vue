@@ -1,7 +1,9 @@
 <template>
   <div>
     <div v-show="searchStatus"  class="search-wrapper">
-        <el-input v-model="tableParams.searchKey" clearable size="medium" placeholder="账户或用户名" />
+        <search-Manage-Type-select  v-model="tableParams.type" />
+        <el-input v-model="tableParams.id" clearable size="medium" placeholder="账户id" />
+        <base-date-picker @changeDate="changeDate" />
         <el-button @click="toQuery" type="primary" size="medium">搜索</el-button>
     </div>
 
@@ -10,10 +12,12 @@
         @search="searchColumn"
         @refresh="toQuery"
         @change="changeColumn"
+        :hide="hide"
         :column="columns"
         style="padding-bottom: 10px"
       >
-        <el-button type="primary" size="small" @click="add">新建角色</el-button>
+        <el-button type="primary" size="small" @click="add">新建用户</el-button>
+        <el-button size="small" type="danger" @click="accountDelete(accountList)">批量删除</el-button>
       </table-column>
 
       <el-table
@@ -39,13 +43,16 @@
           align="center"
         >
           <template v-slot="scope">
-            <span>{{ scope.row[v.field] }}</span>
+            <div v-if="v.field=='type'">
+              {{scope.row[v.field]?"管理员":"员工"}}
+            </div>
+            <span v-else>{{ scope.row[v.field] }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" width="150">
           <template slot-scope="scope">
             <el-button size="mini" @click="upData(scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger">删除</el-button>
+            <el-button size="mini" type="danger" @click="accountDelete([scope.row.id])">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -55,40 +62,54 @@
         :total="pagination.total"
         :current-page="pagination.pageNum"
         :page-size="pagination.pageSize"
-        :page-sizes="[10, 30, 60]"
+        :page-sizes="[30, 60, 100]"
         background
         layout="total,sizes,prev,pager,next"
         style="margin-top: 40px;text-align: right;" />
     </div>
-    <my-form @submit="toQuery" :vis="vis" ref="form" @shut="vis=false"></my-form>
+    <my-form @submit="submit" :vis="vis" ref="form" @shut="vis=false"></my-form>
   </div>
 </template>
 
 <script>
+import SearchManageTypeSelect from '@/components/SearchManageTypeSelect'
+import BaseDatePicker from '@/components/BaseDatePicker'
 import initTable from "@/mixins/initTable.js";
 import myForm from './form';
 import TableColumn from "@/components/TableColumn";
 import {mapMutations,mapState} from "vuex"
+import {accountDelete} from "@/api/account"
 
 export default {
-  
+  name:"account/manage",
+  components: {
+    myForm,
+    TableColumn,
+    SearchManageTypeSelect,
+    BaseDatePicker
+  },
   mixins: [initTable],
   data() {
     return {
       columns: [
-        { field: "account", title: "账户id" },
+        { field: "id", title: "账户id" },
         { field: "name", title: "用户名" },
+        { field: "isMale", title: "性别" },
+        { field: "type", title: "用户类型" },
         { field: "createTime", title: "创建时间" },
+        { field: "phone", title: "电话",width:'100px' },
+        { field: "address", title: "地址" },
+        { field: "email", title: "邮箱" },
         { field: "remark", title: "备注" },
+        { field: "num", title: "所负责的订单数" },
+        { field: "totalAmount", title: "所负责的总金额" },
+        { field: "continued", title: "待结算的金额" },
       ],
-      tableSelect:[],
-      input3: "",
-      selected: true,
+      hide:["num","totalAmount","continued"],
       accountList: [],
       vis: false,
     };
   },
-  components: {myForm,TableColumn},
   created() {
     this.init()
   },
@@ -100,23 +121,20 @@ export default {
       this.tableUrl = '/account/all'
       return true
     },
-    handleTableSelectionChange (selection) {
-      selection.forEach(item => {
-        this.tableSelect.push(item.id)
+    changeDate (date) {
+      this.tableParams.startTime = date.startTime
+      this.tableParams.endTime = date.endTime
+    },
+    handleTableSelectionChange (res) {
+      this.accountList = res.map((item) => item.id);
+    },
+    accountDelete(id){
+      accountDelete(id).then((res)=>{
+        if (res.code === 200) {
+          this.submit(res.data)
+          this.$message.success('删除成功')
+        }
       })
-      console.log(this.tableSelect)
-    },
-    handleSelectionChange(res) {
-      this.selected = res.length == 0 ? true : false;
-      var arr = res.map((item) => item.account);
-      this.accountList = arr;
-    },
-    operate(title) {
-      this.$notify({
-        title: "提示",
-        message: JSON.stringify(this.accountList) + title + "成功",
-        type: "success",
-      });
     },
     add() {
       this.vis = true;
@@ -128,6 +146,10 @@ export default {
       this.vis = true;
       console.log(this.rowData)
     },
+    submit(data){
+      this.pagination.total=data.total
+      this.tableData=data.list
+    }
   },
 };
 </script>
