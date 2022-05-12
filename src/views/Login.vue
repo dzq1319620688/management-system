@@ -2,7 +2,7 @@
   <div class="login">
     <div class="login-weaper">
     <el-card class="wrap">
-        <p class="login-tip">金融后台管理系統</p>
+        <p class="login-tip">电商后台管理系統</p>
       <div>
         <el-form
           :model="ruleForm"

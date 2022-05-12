@@ -1,6 +1,6 @@
 <template>
   <div>
-      <h4 class="title">金融后台管理系统</h4>
+      <h4 class="title">电商后台管理系统</h4>
     <el-menu
       :default-active="activeMenu"
       class="el-menu-vertical-demo"

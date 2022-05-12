@@ -142,7 +142,7 @@
         :total="pagination.total"
         :current-page="pagination.pageNum"
         :page-size="pagination.pageSize"
-        :page-sizes="[30, 60,1000,10000]"
+        :page-sizes="[30,60,100,1000,2000]"
         background
         layout="total,sizes,prev,pager,next"
         style="margin-top: 40px; text-align: right"
