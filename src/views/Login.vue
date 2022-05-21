@@ -3,6 +3,7 @@
     <div class="login-weaper">
     <el-card class="wrap">
         <p class="login-tip">电商后台管理系統</p>
+        <div style="margin-bottom:10px">管理员账号：dzq 员工账号：dzq1 密码：123456</div>
       <div>
         <el-form
           :model="ruleForm"
